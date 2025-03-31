@@ -53,7 +53,7 @@ watchlist = r.smembers("watchlist")
 print(watchlist)
 
 print("Id\tTitle\t\tRelease Date")
-for movie_id in watchlist:
-    movie = tmdb.Movies(movie_id).info()
+for id in watchlist:
+    movie = tmdb.Movies(id).info()
     print(f"{movie["id"]}\t{movie["title"]}\t{movie["release_date"]}")
 
