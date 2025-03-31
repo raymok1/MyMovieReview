@@ -46,7 +46,7 @@ tmdb.API_KEY = "854604cc4fd32fce5035a3fd5f61cfd7"
 
 # if add_to_watchlist == "Y" or add_to_watchlist == "y":
 #     print("add movie to watchlist")
-# else:
+# elif add_to_watchlist == "N" or add_to_watchlist == "n":
 #     print("go back to main menu")
 
 watchlist = r.smembers("watchlist")
@@ -57,3 +57,15 @@ for id in watchlist:
     movie = tmdb.Movies(id).info()
     print(f"{movie["id"]}\t{movie["title"]}\t{movie["release_date"]}")
 
+print("Actions:\n1. Delete movie from watchlist\n2. Add movie to watchlist\n3. Back to main menu")
+action = input("Which action would you like to do? ")
+
+if action == 1:
+    print("Which movie would you like to delete?")
+    movie_id = input("Type the movie ID here: ")
+elif action == 2:
+    pass
+    # Go to movie search feature
+elif action == 3:
+    pass
+    # Go to main menu
