@@ -109,8 +109,9 @@ def view_watchlist():
 
     print("Id\tTitle\t\tRelease Date")
     for id in watchlist:
-        movie = tmdb.Movies(id).info()
-        print(f"{movie["id"]}\t{movie["title"]}\t{movie["release_date"]}")
+        m = tmdb.Movies(id).info()
+        movie = Movie(m["id"], m["title"], m["release_date"])
+        movie.get_details()
 
     print("Actions:\n1. Delete movie from watchlist\n2. Add movie to watchlist\n3. Back to main menu")
     action = input("Which action would you like to do? ")
