@@ -1,5 +1,46 @@
+from abc import ABC, abstractmethod
 import redis
 import tmdbsimple as tmdb
+
+# Component class
+class Media(ABC):
+
+    def __init__(self, id, title, release_date):
+        self.id = id
+        self.title = title
+        self.release_date = release_date
+
+    @abstractmethod
+    def get_details(self):
+        pass
+
+# Concrete component class
+class Movie(Media):
+
+    def __init__(self, id, title, release_date):
+        super.__init__(self, id, title, release_date)
+
+    def get_details(self):
+        return f"{self.id}\t{self.title}\t{self.release_date}"
+    
+# Abstract decorator class
+class MovieDecorator(Movie, Media):
+    def __init__(self, movie):
+        self._movie = movie
+
+    @abstractmethod
+    def get_details(self):
+        pass
+
+# Concrete decorator class
+class MovieReviewDecorator(MovieDecorator):
+    def __init__(self, movie, rating, review):
+        super.__init__(self, movie)
+        self.rating = rating
+        self.review = review
+
+    def get_details(self):
+        return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
 
 # Redis DB connection
 r = redis.Redis(
@@ -49,23 +90,23 @@ tmdb.API_KEY = "854604cc4fd32fce5035a3fd5f61cfd7"
 # elif add_to_watchlist == "N" or add_to_watchlist == "n":
 #     print("go back to main menu")
 
-watchlist = r.smembers("watchlist")
-print(watchlist)
+# watchlist = r.smembers("watchlist")
+# print(watchlist)
 
-print("Id\tTitle\t\tRelease Date")
-for id in watchlist:
-    movie = tmdb.Movies(id).info()
-    print(f"{movie["id"]}\t{movie["title"]}\t{movie["release_date"]}")
+# print("Id\tTitle\t\tRelease Date")
+# for id in watchlist:
+#     movie = tmdb.Movies(id).info()
+#     print(f"{movie["id"]}\t{movie["title"]}\t{movie["release_date"]}")
 
-print("Actions:\n1. Delete movie from watchlist\n2. Add movie to watchlist\n3. Back to main menu")
-action = input("Which action would you like to do? ")
+# print("Actions:\n1. Delete movie from watchlist\n2. Add movie to watchlist\n3. Back to main menu")
+# action = input("Which action would you like to do? ")
 
-if action == 1:
-    print("Which movie would you like to delete?")
-    movie_id = input("Type the movie ID here: ")
-elif action == 2:
-    pass
-    # Go to movie search feature
-elif action == 3:
-    pass
-    # Go to main menu
+# if action == 1:
+#     print("Which movie would you like to delete?")
+#     movie_id = input("Type the movie ID here: ")
+# elif action == 2:
+#     pass
+#     # Go to movie search feature
+# elif action == 3:
+#     pass
+#     # Go to main menu
