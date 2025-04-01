@@ -22,7 +22,7 @@ class Media(ABC):
 class Movie(Media):
 
     def __init__(self, id, title, release_date):
-        super.__init__(self, id, title, release_date)
+        super().__init__(id, title, release_date)
 
     def get_details(self):
         return f"{self.id}\t{self.title}\t{self.release_date}"
@@ -39,7 +39,7 @@ class MovieDecorator(Movie, Media):
 # Concrete decorator class
 class MovieReviewDecorator(MovieDecorator):
     def __init__(self, movie, rating, review):
-        super.__init__(self, movie)
+        super().__init__(movie)
         self.rating = rating
         self.review = review
 
