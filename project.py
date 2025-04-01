@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 import redis
 import tmdbsimple as tmdb
 
+# DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
+# Although not necessary in this simple application, this design pattern was chosen for future 
+# development when is may be necessary to add more "decorations" to media objects at runtime.
+
 # Component class
 class Media(ABC):
 
@@ -77,9 +81,15 @@ def login():
 def movie_search():
     keyword = input("Search for a movie by title or keyword: ")
     search = tmdb.Search().movie(query = keyword)
-    print("Id\tTitle\t\tRelease Date")
+    
+    movies = []
     for s in search["results"]:
-        print(f"{s["id"]}\t{s["title"]}\t{s["release_date"]}")
+        m = Movie(s["id"], s["title"], s["release_date"])
+        movies.append(m)
+
+    print("Id\tTitle\t\tRelease Date")
+    for m in movies:
+        print(m.get_details())
 
     # Add movie to watchlist
     movie_id = input("Input the id of the movie you wish to select: ")
@@ -116,4 +126,4 @@ def view_watchlist():
         # Go to main menu
 
 # Main method
-print("here")
+movie_search()
