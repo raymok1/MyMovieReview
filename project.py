@@ -92,7 +92,7 @@ class Logger:
 # one is redundant.
 
 class DatabaseConnection:
-    def __init__(self, host, password, port):
+    def __init__(self):
         self.connection = redis.Redis(
             host = 'redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com',
             port = 16105,
@@ -110,9 +110,15 @@ class DatabaseConnection:
 class DbConnectionPool:
     def __init__(self, max_connections):
         self.pool = Queue(maxsize = max_connections)
+        self.max_connections = max_connections
 
     def acquire(self):
-        return self.pool.get()
+        if self.pool.qsize() < self.max_connections:
+            self.db_connection = DatabaseConnection().get_connection()
+            self.pool.put(self.db_connection)
+        else:
+            self.db_connection = self.pool.get()
+        return self.db_connection
     
     def release(self, db_connection):
         self.pool.put(db_connection)
@@ -123,9 +129,9 @@ class DbConnectionPool:
             db_connection.close()
 
 
-# Redis DB connection
-r = DatabaseConnection("redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com", "Uyh3GwUscxJ6f7ivzCNERzYZo8OM7ep0", 16105)
-r.close()
+# Create Redis DB connection from object pool
+# For this simple app, I am using a maximum pool size of 2
+r = DbConnectionPool(2).acquire()
 
 # TheMovieDb web API connection via tmdbsimple wrapper: https://github.com/celiao/tmdbsimple/
 tmdb.API_KEY = "854604cc4fd32fce5035a3fd5f61cfd7"
@@ -199,4 +205,3 @@ def view_watchlist():
         # Go to main menu
 
 # Main method
-movie_search()
