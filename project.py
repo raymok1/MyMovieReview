@@ -65,6 +65,9 @@ class MovieReviewDecorator(MovieDecorator):
 class Logger:
     _instance = None
 
+    def __init__(self):
+        self._logs = ""
+
     @staticmethod
     def get_instance():
         if Logger._instance is None:
@@ -106,6 +109,7 @@ class DatabaseConnection:
 
 # Redis DB connection
 r = DatabaseConnection("host", "password")
+r.close()
 
 # TheMovieDb web API connection via tmdbsimple wrapper: https://github.com/celiao/tmdbsimple/
 tmdb.API_KEY = "854604cc4fd32fce5035a3fd5f61cfd7"
