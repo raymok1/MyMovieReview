@@ -46,6 +46,22 @@ class MovieReviewDecorator(MovieDecorator):
     def get_details(self):
         return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
 
+
+# SINGLETON DESIGN PATTERN - This design pattern is used to create a logger, which    
+
+# Logger class 
+class Logger:
+    _instance = None
+
+    @staticmethod
+    def get_instance():
+        if Logger._instance is None:
+            Logger._instance = Logger()
+        return Logger._instance
+
+# Usage
+logger = Logger.get_instance()
+
 # Redis DB connection
 r = redis.Redis(
     host = "redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com",
