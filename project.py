@@ -3,6 +3,7 @@ import redis
 import tmdbsimple as tmdb
 import datetime
 
+
 # DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
 # Although not necessary in this simple application, this design pattern was chosen for future 
 # development when is may be necessary to add more "decorations" to media objects at runtime.
@@ -79,17 +80,32 @@ class Logger:
     def get_logs(self):
         print(self._logs)
 
-# Usage
-logger = Logger.get_instance()
+
+# OBJECT POOL DESIGN PATTERN - This design pattern is used to manage a pool of database 
+# connections. Each time a connect is needed, it is taken from the pool then released back 
+# to the pool when it is no longer needed. If I had more time, I would switch to a SQL 
+# database as Redis already uses the object pool pattern within its connection, so creating 
+# one is redundant.
+
+class DatabaseConnection:
+    def __init__(self, host, password):
+        self.connection = redis.Redis(
+            host = "redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com",
+            port = 16105,
+            decode_responses = True,
+            username = "default",
+            password = "Uyh3GwUscxJ6f7ivzCNERzYZo8OM7ep0",
+        )
+
+    def get_connection(self):
+        pass
+        
+    def close(self):
+        self.connection.close()
+
 
 # Redis DB connection
-r = redis.Redis(
-    host = "redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com",
-    port = 16105,
-    decode_responses = True,
-    username = "default",
-    password = "Uyh3GwUscxJ6f7ivzCNERzYZo8OM7ep0",
-)
+r = DatabaseConnection("host", "password")
 
 # TheMovieDb web API connection via tmdbsimple wrapper: https://github.com/celiao/tmdbsimple/
 tmdb.API_KEY = "854604cc4fd32fce5035a3fd5f61cfd7"
