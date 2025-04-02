@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import redis
 import tmdbsimple as tmdb
+import datetime
 
 # DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
 # Although not necessary in this simple application, this design pattern was chosen for future 
@@ -13,6 +14,8 @@ class Media(ABC):
         self.id = id
         self.title = title
         self.release_date = release_date
+        logger = Logger.get_instance()
+        logger.log("Media object created")
 
     @abstractmethod
     def get_details(self):
@@ -23,6 +26,8 @@ class Movie(Media):
 
     def __init__(self, id, title, release_date):
         super().__init__(id, title, release_date)
+        logger = Logger.get_instance()
+        logger.log("Movie object created")
 
     def get_details(self):
         return f"{self.id}\t{self.title}\t{self.release_date}"
@@ -31,6 +36,8 @@ class Movie(Media):
 class MovieDecorator(Movie, Media):
     def __init__(self, movie):
         self._movie = movie
+        logger = Logger.get_instance()
+        logger.log("MovieDecorator object created")
 
     @abstractmethod
     def get_details(self):
@@ -42,12 +49,16 @@ class MovieReviewDecorator(MovieDecorator):
         super().__init__(movie)
         self.rating = rating
         self.review = review
+        logger = Logger.get_instance()
+        logger.log("MovieReviewDecorator object created")
 
     def get_details(self):
         return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
 
 
-# SINGLETON DESIGN PATTERN - This design pattern is used to create a logger, which    
+# SINGLETON DESIGN PATTERN - This design pattern is used to create a logger. This design 
+# pattern was used so only one instance of the logger is created, and this instance can be 
+# accessed from any class.    
 
 # Logger class 
 class Logger:
@@ -58,6 +69,15 @@ class Logger:
         if Logger._instance is None:
             Logger._instance = Logger()
         return Logger._instance
+    
+    def log(self, message):
+        self._logs += f"{datetime.datetime.now(datetime.timezone.utc)} {message}\n"
+
+    def log_error(self, message):
+        self._logs += f"{datetime.datetime.now(datetime.timezone.utc)} [ERROR] {message}\n"
+
+    def get_logs(self):
+        print(self._logs)
 
 # Usage
 logger = Logger.get_instance()
