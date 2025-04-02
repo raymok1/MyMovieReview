@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import redis
 import tmdbsimple as tmdb
 import datetime
+from queue import Queue
 
 
 # DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
@@ -91,9 +92,9 @@ class Logger:
 # one is redundant.
 
 class DatabaseConnection:
-    def __init__(self, host, password):
+    def __init__(self, host, password, port):
         self.connection = redis.Redis(
-            host = "redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com",
+            host = 'redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com',
             port = 16105,
             decode_responses = True,
             username = "default",
@@ -101,14 +102,29 @@ class DatabaseConnection:
         )
 
     def get_connection(self):
-        pass
+        return self.connection
         
     def close(self):
         self.connection.close()
 
+class DbConnectionPool:
+    def __init__(self, max_connections):
+        self.pool = Queue(maxsize = max_connections)
+
+    def acquire(self):
+        return self.pool.get()
+    
+    def release(self, db_connection):
+        self.pool.put(db_connection)
+
+    def close_all(self):
+        while self.pool.empty() == False:
+            db_connection = self.pool.get()
+            db_connection.close()
+
 
 # Redis DB connection
-r = DatabaseConnection("host", "password")
+r = DatabaseConnection("redis-16105.c323.us-east-1-2.ec2.redns.redis-cloud.com", "Uyh3GwUscxJ6f7ivzCNERzYZo8OM7ep0", 16105)
 r.close()
 
 # TheMovieDb web API connection via tmdbsimple wrapper: https://github.com/celiao/tmdbsimple/
