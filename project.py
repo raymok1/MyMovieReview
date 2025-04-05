@@ -5,59 +5,6 @@ import datetime
 from queue import Queue
 
 
-# DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
-# Although not necessary in this simple application, this design pattern was chosen for future 
-# development when is may be necessary to add more "decorations" to media objects at runtime.
-
-# Component class
-class Media(ABC):
-
-    def __init__(self, id, title, release_date):
-        self.id = id
-        self.title = title
-        self.release_date = release_date
-        logger = Logger.get_instance()
-        logger.log("Media object created")
-
-    @abstractmethod
-    def get_details(self):
-        pass
-
-# Concrete component class
-class Movie(Media):
-
-    def __init__(self, id, title, release_date):
-        super().__init__(id, title, release_date)
-        logger = Logger.get_instance()
-        logger.log("Movie object created")
-
-    def get_details(self):
-        return f"{self.id}\t{self.title}\t{self.release_date}"
-    
-# Abstract decorator class
-class MovieDecorator(Movie, Media):
-    def __init__(self, movie):
-        self._movie = movie
-        logger = Logger.get_instance()
-        logger.log("MovieDecorator object created")
-
-    @abstractmethod
-    def get_details(self):
-        pass
-
-# Concrete decorator class
-class MovieReviewDecorator(MovieDecorator):
-    def __init__(self, movie, rating, review):
-        super().__init__(movie)
-        self.rating = rating
-        self.review = review
-        logger = Logger.get_instance()
-        logger.log("MovieReviewDecorator object created")
-
-    def get_details(self):
-        return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
-
-
 # SINGLETON DESIGN PATTERN - This design pattern is used to create a logger. This design 
 # pattern was used so only one instance of the logger is created, and this instance can be 
 # accessed from any class.    
@@ -78,11 +25,67 @@ class Logger:
     def log(self, message):
         self._logs += f"{datetime.datetime.now(datetime.timezone.utc)} {message}\n"
 
+    def log_debug(self, message):
+        self._logs += f"{datetime.datetime.now(datetime.timezone.utc)} [DEBUG] {message}\n"
+
     def log_error(self, message):
         self._logs += f"{datetime.datetime.now(datetime.timezone.utc)} [ERROR] {message}\n"
 
     def get_logs(self):
         print(self._logs)
+
+
+# DECORATOR DESIGN PATTERN - The following 4 classes are used in the decorator design pattern. 
+# Although not necessary in this simple application, this design pattern was chosen for future 
+# development when is may be necessary to add more "decorations" to media objects at runtime.
+
+# Component class
+class Media(ABC):
+
+    def __init__(self, id, title, release_date):
+        self.id = id
+        self.title = title
+        self.release_date = release_date
+        logger = Logger.get_instance()
+        logger.log_debug("Media object created")
+
+    @abstractmethod
+    def get_details(self):
+        pass
+
+# Concrete component class
+class Movie(Media):
+
+    def __init__(self, id, title, release_date):
+        super().__init__(id, title, release_date)
+        logger = Logger.get_instance()
+        logger.log_debug("Movie object created")
+
+    def get_details(self):
+        return f"{self.id}\t{self.title}\t{self.release_date}"
+    
+# Abstract decorator class
+class MovieDecorator(Movie, Media):
+    def __init__(self, movie):
+        self._movie = movie
+        logger = Logger.get_instance()
+        logger.log_debug("MovieDecorator object created")
+
+    @abstractmethod
+    def get_details(self):
+        pass
+
+# Concrete decorator class
+class MovieReviewDecorator(MovieDecorator):
+    def __init__(self, movie, rating, review):
+        super().__init__(movie)
+        self.rating = rating
+        self.review = review
+        logger = Logger.get_instance()
+        logger.log_debug("MovieReviewDecorator object created")
+
+    def get_details(self):
+        return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
 
 
 # OBJECT POOL DESIGN PATTERN - This design pattern is used to manage a pool of database 
@@ -153,7 +156,8 @@ def login():
         if login == False:
             print("Incorrect username or password. Please try again.")
 
-    print("LOGGED in")
+    logger = Logger.get_instance()
+    logger.log("User logged in")
 
 # Search for movie method
 def movie_search():
