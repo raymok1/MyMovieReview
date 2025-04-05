@@ -159,6 +159,29 @@ def login():
     logger = Logger.get_instance()
     logger.log("User logged in")
 
+def main_menu():
+    print("Welcome to MyMovieReview")
+    print("Please choose from the menu options below:")
+    print("1. Search for a movie")
+    print("2. View watchlist")
+    print("3. View my movie reviews")
+    print("4. View app logs")
+    print ("5. Exit app")
+
+    choice = int(input("Type the number of the option you wish to choose: "))
+
+    match choice:
+        case 1:
+            movie_search()
+        case 2:
+            view_watchlist()
+        case 3:
+            view_reviews()
+        case 4:
+            view_app_logs()
+        case 5:
+            pass
+
 # Search for movie method
 def movie_search():
     keyword = input("Search for a movie by title or keyword: ")
@@ -173,16 +196,36 @@ def movie_search():
     for m in movies:
         print(m.get_details())
 
-    # Add movie to watchlist
+    # Select movie and action
     movie_id = input("Input the id of the movie you wish to select: ")
     movie = tmdb.Movies(movie_id).info()
     print(f"You have selected '{movie["title"]}'")
+    print("What would you like to do?")
+    print("1. Add this movie to watchlist")
+    print("2. Review this movie")
+    print("3. Return to main menu")
+    choice = int(input("Type the number of the option you wish to choose: "))
+
+    match choice:
+        case 1:
+            add_to_watchlist(movie_id)
+        case 2:
+            review_movie(movie_id)
+        case 3:
+            main_menu()
+
     add_to_watchlist = input("Would you like to add this movie to your watchlist? Y or N: ")
 
     if add_to_watchlist == "Y" or add_to_watchlist == "y":
         print("add movie to watchlist")
     elif add_to_watchlist == "N" or add_to_watchlist == "n":
         print("go back to main menu")
+
+def add_to_watchlist(movie_id):
+    pass
+
+def review_movie(movie_id):
+    pass
 
 # View watchlist function
 def view_watchlist():
@@ -207,5 +250,15 @@ def view_watchlist():
     elif action == 3:
         pass
         # Go to main menu
+    
+def view_reviews():
+    pass
+
+def view_app_logs():
+    logger = Logger.get_instance()
+    logger.get_logs()
+
+    input("Press any key to continue...")
 
 # Main method
+main_menu()
