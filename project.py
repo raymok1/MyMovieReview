@@ -171,6 +171,7 @@ def login():
     logger = Logger.get_instance()
     logger.log("User logged in")
 
+# Method to display main menu
 def main_menu():
     print("\n" * 100)
     print("Welcome to MyMovieReview")
@@ -234,6 +235,7 @@ def movie_search():
         case 3:
             main_menu()
 
+# Add movie to watchlist by id
 def add_to_watchlist(movie_id):
     r.sadd("watchlist", movie_id)
 
@@ -244,6 +246,7 @@ def add_to_watchlist(movie_id):
     input("Press any key to continue to main menu.")
     main_menu()
 
+# Write a movie review
 def review_movie(movie):
     print(f"Type your review for {movie.title}:")
     review_text = input("Review Text: ")
@@ -260,22 +263,22 @@ def review_movie(movie):
     input("Press any key to continue to main menu.")
     main_menu()
 
-# View watchlist function
+# View movie watchlist function
 def view_watchlist():
     logger = Logger.get_instance()
     logger.log("User selected view watchlist option")
 
     watchlist = r.smembers("watchlist")
 
-    logger.log_debug("Movie has been retrieved from watchlist in database")
+    logger.log_debug("Movie watchlist has been retrieved from database")
 
     print("Id\tTitle\t\tRelease Date")
     for id in watchlist:
         m = tmdb.Movies(id).info()
         movie = Movie(m["id"], m["title"], m["release_date"])
-        movie.get_details()
+        print(movie.get_details())
 
-    print("What would you like to do?")
+    print("\nWhat would you like to do?")
     print("1. Delete movie from watchlist")
     print("2. Return to main menu")
     choice = int(input("Type the number of the option you wish to choose: "))
@@ -286,6 +289,7 @@ def view_watchlist():
         case 2:
             main_menu()
 
+# Delete movie from watchlist
 def delete_from_watchlist(movie_id):
     logger = Logger.get_instance()
     logger.log("User selected delete from watchlist option")
@@ -296,19 +300,23 @@ def delete_from_watchlist(movie_id):
     logger.log_debug("Movie has been delete from watchlist in database")
 
     print("\nMovie has been removed from watchlist.")
-    input("Press any key to continue to main menu.")
+    input("Press any key to return to main menu.")
     main_menu()
-    
+
+# View all movie reviews    
 def view_reviews():
     logger = Logger.get_instance()
     logger.log("User selected view reviews option")
     pass
 
+# View app logs
 def view_app_logs():
     logger = Logger.get_instance()
     logger.get_logs()
 
-    input("Press any key to continue...")
+    input("Press any key to return to main menu.")
+    main_menu()
 
 # Main method
+login()
 main_menu()
