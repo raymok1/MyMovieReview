@@ -220,7 +220,7 @@ def movie_search():
 
 def add_to_watchlist(movie_id):
     r.sadd("watchlist", movie_id)
-    print("Movie has been added to watchlist.")
+    print("\nMovie has been added to watchlist.")
     input("Press any key to continue to main menu.")
     main_menu()
 
@@ -233,14 +233,13 @@ def review_movie(movie):
     # decorator pattern is used to dynamically add properties to an existing object
     reviewed_movie = MovieReviewDecorator(movie, review_text)
 
-    print("Movie review has been added.")
+    print("\nMovie review has been added.")
     input("Press any key to continue to main menu.")
     main_menu()
 
 # View watchlist function
 def view_watchlist():
     watchlist = r.smembers("watchlist")
-    print(watchlist)
 
     print("Id\tTitle\t\tRelease Date")
     for id in watchlist:
@@ -248,18 +247,22 @@ def view_watchlist():
         movie = Movie(m["id"], m["title"], m["release_date"])
         movie.get_details()
 
-    print("Actions:\n1. Delete movie from watchlist\n2. Add movie to watchlist\n3. Back to main menu")
-    action = input("Which action would you like to do? ")
+    print("What would you like to do?")
+    print("1. Delete movie from watchlist")
+    print("2. Return to main menu")
+    choice = int(input("Type the number of the option you wish to choose: "))
 
-    if action == 1:
-        print("Which movie would you like to delete?")
-        movie_id = input("Type the movie ID here: ")
-    elif action == 2:
-        pass
-        # Go to movie search feature
-    elif action == 3:
-        pass
-        # Go to main menu
+    match choice:
+        case 1:
+            delete_from_watchlist(movie.id)
+        case 2:
+            main_menu()
+
+def delete_from_watchlist(movie_id):
+    r.srem("watchlist", movie_id)
+    print("\nMovie has been removed from watchlist.")
+    input("Press any key to continue to main menu.")
+    main_menu()
     
 def view_reviews():
     pass
