@@ -78,7 +78,7 @@ class MovieDecorator(Movie, Media):
 # Concrete decorator class
 class MovieReviewDecorator(MovieDecorator):
     def __init__(self, movie, review):
-        super().__init__(movie, review)
+        super().__init__(movie)
         self.review = review
         logger = Logger.get_instance()
         logger.log_debug("MovieReviewDecorator object created")
@@ -321,7 +321,8 @@ def view_reviews():
         reviewed_movie = MovieReviewDecorator(movie, review_text)
         print(reviewed_movie.get_details())
 
-    
+    input("Press any key to continue to main menu.")
+    main_menu()
 
     
     # for id in watchlist:
@@ -353,5 +354,5 @@ def view_app_logs():
 
 # Main method
 # login()
-# main_menu()
-view_reviews()
+main_menu()
+# view_reviews()
