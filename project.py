@@ -118,17 +118,30 @@ class DbConnectionPool:
         if self.pool.qsize() < self.max_connections:
             self.db_connection = DatabaseConnection().get_connection()
             self.pool.put(self.db_connection)
+            
+            logger = Logger.get_instance()
+            logger.log_debug("New database connection has been created and added to pool")
         else:
             self.db_connection = self.pool.get()
+
+            logger = Logger.get_instance()
+            logger.log_debug("Database connection has been acquired from pool")
+
         return self.db_connection
     
     def release(self, db_connection):
         self.pool.put(db_connection)
+        
+        logger = Logger.get_instance()
+        logger.log_debug("Database connection has released back into pool")
 
     def close_all(self):
         while self.pool.empty() == False:
             db_connection = self.pool.get()
             db_connection.close()
+        
+        logger = Logger.get_instance()
+        logger.log_debug("All database connections in pool have been closed")
 
 
 # Create Redis DB connection from object pool
@@ -184,6 +197,9 @@ def main_menu():
 
 # Search for movie method
 def movie_search():
+    logger = Logger.get_instance()
+    logger.log("User selected movie search option")
+
     print("\n" * 100)
     keyword = input("Search for a movie by title or keyword: ")
     search = tmdb.Search().movie(query = keyword)
@@ -220,6 +236,10 @@ def movie_search():
 
 def add_to_watchlist(movie_id):
     r.sadd("watchlist", movie_id)
+
+    logger = Logger.get_instance()
+    logger.log_debug("Movie has been added to watchlist in database")
+    
     print("\nMovie has been added to watchlist.")
     input("Press any key to continue to main menu.")
     main_menu()
@@ -228,6 +248,9 @@ def review_movie(movie):
     print(f"Type your review for {movie.title}:")
     review_text = input("Review Text: ")
     r.hset("reviews", movie.id, review_text)
+
+    logger = Logger.get_instance()
+    logger.log_debug("Movie review has been added to reviews in database")
     
     # This line is currently unused in the application but it just demonstrates how the 
     # decorator pattern is used to dynamically add properties to an existing object
@@ -239,7 +262,12 @@ def review_movie(movie):
 
 # View watchlist function
 def view_watchlist():
+    logger = Logger.get_instance()
+    logger.log("User selected view watchlist option")
+
     watchlist = r.smembers("watchlist")
+
+    logger.log_debug("Movie has been retrieved from watchlist in database")
 
     print("Id\tTitle\t\tRelease Date")
     for id in watchlist:
@@ -259,12 +287,21 @@ def view_watchlist():
             main_menu()
 
 def delete_from_watchlist(movie_id):
+    logger = Logger.get_instance()
+    logger.log("User selected delete from watchlist option")
+
     r.srem("watchlist", movie_id)
+
+    logger = Logger.get_instance()
+    logger.log_debug("Movie has been delete from watchlist in database")
+
     print("\nMovie has been removed from watchlist.")
     input("Press any key to continue to main menu.")
     main_menu()
     
 def view_reviews():
+    logger = Logger.get_instance()
+    logger.log("User selected view reviews option")
     pass
 
 def view_app_logs():
