@@ -327,27 +327,8 @@ def view_reviews():
         table.append(reviewed_movie.get_details())
     print(tabulate(table, headers = ["Id", "Title", "Release Date", "Review"]))
 
-    input("Press any key to continue to main menu.")
-    main_menu()
-
-    
-    # for id in watchlist:
-    #     m = tmdb.Movies(id).info()
-    #     movie = Movie(m["id"], m["title"], m["release_date"])
-    #     print(movie.get_details())
-
-    # print("\nWhat would you like to do?")
-    # print("1. Delete movie from watchlist")
-    # print("2. Return to main menu")
-    # choice = int(input("Type the number of the option you wish to choose: "))
-
-    # match choice:
-    #     case 1:
-    #         movie_id = input("\nInput the id of the movie you wish to delete: ")
-    #         delete_from_watchlist(movie.id)
-    #     case 2:
-    #         main_menu()
-    
+    input("Press any key to return to main menu.")
+    main_menu()    
 
 # View app logs
 def view_app_logs():
@@ -359,6 +340,5 @@ def view_app_logs():
     main_menu()
 
 # Main method
-# login()
+login()
 main_menu()
-# view_reviews()
