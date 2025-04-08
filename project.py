@@ -1,3 +1,12 @@
+# Kayla Raymond, 400489831
+# MyMovieReview application
+# YouTube Video link: https://youtu.be/Cz_GaqDWD7M
+# GitHub link: https://github.com/raymok1/MyMovieReview
+# Instructions to run locally: 
+#       - Ensure redis, tmdbsimple, and tabulate are installed (using pip install)
+#       - Navigate to directory of python main file
+#       - Run python project.py in powershell
+
 from abc import ABC, abstractmethod
 import redis
 import tmdbsimple as tmdb
