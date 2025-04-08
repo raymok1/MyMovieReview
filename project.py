@@ -3,7 +3,7 @@ import redis
 import tmdbsimple as tmdb
 import datetime
 from queue import Queue
-
+from tabulate import tabulate # type: ignore
 
 # SINGLETON DESIGN PATTERN - This design pattern is used to create a logger. This design 
 # pattern was used so only one instance of the logger is created, and this instance can be 
@@ -62,7 +62,7 @@ class Movie(Media):
         logger.log_debug("Movie object created")
 
     def get_details(self):
-        return f"{self.id}\t{self.title}\t{self.release_date}"
+        return [self.id, self.title, self.release_date]
     
 # Abstract decorator class
 class MovieDecorator(Movie, Media):
@@ -84,7 +84,9 @@ class MovieReviewDecorator(MovieDecorator):
         logger.log_debug("MovieReviewDecorator object created")
 
     def get_details(self):
-        return self._movie.get_details() + f"\t{self.review}"
+        decorated_movie_details = self._movie.get_details()
+        decorated_movie_details.append(self.review)
+        return decorated_movie_details
 
 
 # OBJECT POOL DESIGN PATTERN - This design pattern is used to manage a pool of database 
@@ -210,9 +212,10 @@ def movie_search():
         m = Movie(s["id"], s["title"], s["release_date"])
         movies.append(m)
 
-    print("Id\tTitle\t\tRelease Date")
+    table = []
     for m in movies:
-        print(m.get_details())
+        table.append(m.get_details())
+    print(f"\n{tabulate(table, headers = ["Id", "Title", "Release Date"])}")
 
     # Select movie and action
     movie_id = input("\nInput the id of the movie you wish to select: ")
@@ -273,11 +276,12 @@ def view_watchlist():
 
     logger.log_debug("Movie watchlist has been retrieved from database")
 
-    print("Id\tTitle\t\tRelease Date")
+    table = []
     for id in watchlist:
         m = tmdb.Movies(id).info()
         movie = Movie(m["id"], m["title"], m["release_date"])
-        print(movie.get_details())
+        table.append(movie.get_details())
+    print(tabulate(table, headers = ["Id", "Title", "Release Date"]))
 
     print("\nWhat would you like to do?")
     print("1. Delete movie from watchlist")
@@ -313,13 +317,15 @@ def view_reviews():
 
     reviews = r.hgetall("reviews")
     logger.log_debug("Movie reviews have been retrieved from database")
-
-    print("Id\tTitle\t\tRelease Date\tReview")
+    
+    table = []
     for movie_id, review_text in reviews.items():
         m = tmdb.Movies(movie_id).info()
         movie = Movie(m["id"], m["title"], m["release_date"])
         reviewed_movie = MovieReviewDecorator(movie, review_text)
-        print(reviewed_movie.get_details())
+
+        table.append(reviewed_movie.get_details())
+    print(tabulate(table, headers = ["Id", "Title", "Release Date", "Review"]))
 
     input("Press any key to continue to main menu.")
     main_menu()
