@@ -77,15 +77,14 @@ class MovieDecorator(Movie, Media):
 
 # Concrete decorator class
 class MovieReviewDecorator(MovieDecorator):
-    def __init__(self, movie, rating, review):
-        super().__init__(movie)
-        self.rating = rating
+    def __init__(self, movie, review):
+        super().__init__(movie, review)
         self.review = review
         logger = Logger.get_instance()
         logger.log_debug("MovieReviewDecorator object created")
 
     def get_details(self):
-        return self._movie.get_details() + f"\t{self.rating}\t{self.review}"
+        return self._movie.get_details() + f"\t{self.review}"
 
 
 # OBJECT POOL DESIGN PATTERN - This design pattern is used to manage a pool of database 
@@ -160,6 +159,7 @@ def login():
     logger.log("User logged in")
 
 def main_menu():
+    print("\n" * 100)
     print("Welcome to MyMovieReview")
     print("Please choose from the menu options below:")
     print("1. Search for a movie")
@@ -184,6 +184,7 @@ def main_menu():
 
 # Search for movie method
 def movie_search():
+    print("\n" * 100)
     keyword = input("Search for a movie by title or keyword: ")
     search = tmdb.Search().movie(query = keyword)
     
@@ -197,9 +198,12 @@ def movie_search():
         print(m.get_details())
 
     # Select movie and action
-    movie_id = input("Input the id of the movie you wish to select: ")
-    movie = tmdb.Movies(movie_id).info()
-    print(f"You have selected '{movie["title"]}'")
+    movie_id = input("\nInput the id of the movie you wish to select: ")
+    m = tmdb.Movies(movie_id).info()
+    movie = Movie(m["id"], m["title"], m["release_date"])
+    
+    print("\n" * 100)
+    print(f"You have selected '{movie.title}'")
     print("What would you like to do?")
     print("1. Add this movie to watchlist")
     print("2. Review this movie")
@@ -208,20 +212,30 @@ def movie_search():
 
     match choice:
         case 1:
-            add_to_watchlist(movie_id)
+            add_to_watchlist(movie.id)
         case 2:
-            review_movie(movie_id)
+            review_movie(movie)
         case 3:
             main_menu()
 
 def add_to_watchlist(movie_id):
-    r.sadd(movie_id)
+    r.sadd("watchlist", movie_id)
     print("Movie has been added to watchlist.")
     input("Press any key to continue to main menu.")
     main_menu()
 
-def review_movie(movie_id):
-    print("Type your review for this movie")
+def review_movie(movie):
+    print(f"Type your review for {movie.title}:")
+    review_text = input("Review Text: ")
+    r.hset("reviews", movie.id, review_text)
+    
+    # This line is currently unused in the application but it just demonstrates how the 
+    # decorator pattern is used to dynamically add properties to an existing object
+    reviewed_movie = MovieReviewDecorator(movie, review_text)
+
+    print("Movie review has been added.")
+    input("Press any key to continue to main menu.")
+    main_menu()
 
 # View watchlist function
 def view_watchlist():
