@@ -214,18 +214,14 @@ def movie_search():
         case 3:
             main_menu()
 
-    add_to_watchlist = input("Would you like to add this movie to your watchlist? Y or N: ")
-
-    if add_to_watchlist == "Y" or add_to_watchlist == "y":
-        print("add movie to watchlist")
-    elif add_to_watchlist == "N" or add_to_watchlist == "n":
-        print("go back to main menu")
-
 def add_to_watchlist(movie_id):
-    pass
+    r.sadd(movie_id)
+    print("Movie has been added to watchlist.")
+    input("Press any key to continue to main menu.")
+    main_menu()
 
 def review_movie(movie_id):
-    pass
+    print("Type your review for this movie")
 
 # View watchlist function
 def view_watchlist():
